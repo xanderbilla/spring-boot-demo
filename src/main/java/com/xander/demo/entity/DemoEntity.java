@@ -1,11 +1,22 @@
 package com.xander.demo.entity;
 
+import java.time.LocalDateTime;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection = "demo")
 public class DemoEntity {
-    private long id;
+
+    @Id
+    private ObjectId id;
     private String name;
     private String description;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 
-    public long getId() {
+    public ObjectId getId() {
         return id;
     }
 
@@ -17,7 +28,15 @@ public class DemoEntity {
         return description;
     }
 
-    public void setId(long id) {
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -28,5 +47,13 @@ public class DemoEntity {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public void setUpdatedDate(LocalDateTime updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
 }
