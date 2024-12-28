@@ -23,7 +23,7 @@ public class DemoEntity {
     @Id
     private ObjectId id;
     @NonNull //MongoDB specific annotation to mark a field as mandatory
-    private String name; //NMandatory field due to the @NonNull annotation
+    private String demoTitle; //Mandatory field due to the @NonNull annotation
     private String description;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;

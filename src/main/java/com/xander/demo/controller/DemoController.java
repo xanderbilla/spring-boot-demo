@@ -36,7 +36,7 @@ public class DemoController {
      * @RequestBody DemoEntity entity
      * 
      * {
-     *      "name": "John Doe",
+     *      "demoTitle": "John Doe",
      *      "description": "This is a demo entry"
      * }
      * 
@@ -65,7 +65,7 @@ public class DemoController {
      * Response: [
      *      {
      *          "id": "60f3b3b3b3b3b3b3b3b3b3b3",
-     *          "name": "John Doe",
+     *          "demoTitle": "John Doe",
      *          "description": "This is a demo entry",
      *          "createdDate": "2021-07-19T12:00:00"
      *          "updatedDate": "2021-07-19T12:01:00"
@@ -76,6 +76,9 @@ public class DemoController {
     public ResponseEntity<?> getAllEntries() {
         try {
             List<DemoEntity> entries = demoEntryService.getAllDemoEntries();
+            if (entries.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
             return ResponseEntity.ok().body(entries);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -93,7 +96,7 @@ public class DemoController {
      * Response: [
      *      {
      *          "id": "60f3b3b3b3b3b3b3b3b3b3b3",
-     *          "name": "John Doe",
+     *          "demoTitle": "John Doe",
      *          "description": "This is a demo entry",
      *          "createdDate": "2021-07-19T12:00:00"
      *          "updatedDate": "2021-07-19T12:01:00"
@@ -140,7 +143,7 @@ public class DemoController {
      * @RequestBody DemoEntity entity
      * 
      * {
-     * "name": "John Doe",
+     * "demoTitle": "John Doe",
      * "description": "This is a demo entry"
      * }
      * 
@@ -153,9 +156,9 @@ public class DemoController {
         try {
             DemoEntity oldEntity = demoEntryService.getDemoEntry(id).orElse(null);
             if (oldEntity != null) {
-                oldEntity.setName(
-                        entity.getName() != null && !entity.getName().equals("") ? entity.getName()
-                                : oldEntity.getName());
+                oldEntity.setDemoTitle(
+                        entity.getDemoTitle() != null && !entity.getDemoTitle().equals("") ? entity.getDemoTitle()
+                                : oldEntity.getDemoTitle());
                 oldEntity.setDescription(
                         entity.getDescription() != null && !entity.getDescription().equals("") ? entity.getDescription()
                                 : oldEntity.getDescription());
