@@ -76,7 +76,7 @@ public class DemoController {
     public ResponseEntity<?> getAllEntries() {
         try {
             List<DemoEntity> entries = demoEntryService.getAllDemoEntries();
-            return ResponseEntity.ok().body(entries.get(0));
+            return ResponseEntity.ok().body(entries);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
