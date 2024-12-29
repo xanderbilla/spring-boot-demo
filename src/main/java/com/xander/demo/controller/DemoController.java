@@ -2,7 +2,6 @@ package com.xander.demo.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,38 +16,101 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xander.demo.entity.DemoEntity;
-import com.xander.demo.service.DemoEntryService;
+import com.xander.demo.entity.UserEntity;
+import com.xander.demo.service.DemoService;
+import com.xander.demo.service.UserService;
 
 @RestController
 @RequestMapping("/demo")
 public class DemoController {
 
     @Autowired
-    private DemoEntryService demoEntryService;
+    private DemoService demoService;
+
+    @Autowired
+    private UserService userService;
 
     /*
-     * Add a new entry
+     * Get all demo entries
      * 
-     * @param entity
+     * @return List<DemoEntity>
+     * 
+     * GET /demo
+     * 
+     * Response: [
+     *   {
+     *            "id": "5f7b3b7b7b3b7b3b7b3b7b3b",
+     *     "demoTitle": "Demo Title",
+     *   "description": "Description for demo",
+     *   "createdDate": "2020-10-05T12:00:00"
+     *      }
+     * ]
+     */
+
+    @GetMapping
+    public ResponseEntity<List<DemoEntity>> getAllDemoEntries(){
+        try {
+            List<DemoEntity> all = demoService.getAllDemoEntries();
+            return ResponseEntity.ok().body(all);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /*
+     * Get all demo entries for a user
+     * 
+     * @param username
+     * 
+     * @return List<DemoEntity>
+     * 
+     * GET /demo/{username}
+     * 
+     * Response: [
+     *    {
+     *              "id": "5f7b3b7b7b3b7b3b7b3b7b3b",
+     *       "demoTitle": "Demo Title",
+     *     "description": "Description for demo ",
+     *     "createdDate": "2020-10-05T12:00:00"
+     *   }
+     * ]
+     */
+    @GetMapping("/{username}")
+    public ResponseEntity<?> getAllUserDemo(@PathVariable String username) {
+        try {
+            UserEntity user = userService.findByUsername(username);
+            // get all demo entries for the user have key "demoEntries"
+            List<DemoEntity> all = user.getDemoEntries(); 
+            return ResponseEntity.ok().body(all);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /*
+     * Add a new demo entry for a user
+     * 
+     * @param username
+     * @param demoEntity
      * 
      * @return String
      * 
-     * @RequestBody DemoEntity entity
+     * @RequestBody DemoEntity demoEntity
      * 
      * {
-     *      "demoTitle": "John Doe",
-     *      "description": "This is a demo entry"
+     *     "demoTitle": "Demo Title",
+     *   "description": "Description for demo"
      * }
      * 
-     * POST /demo/add
+     * POST /demo/{username}
      * 
      * Response: Entry created successfully
+     * 
      */
-    @PostMapping("/add")
-    public ResponseEntity<String> addEntry(@RequestBody DemoEntity entity) {
+    @PostMapping("/{username}")
+    public ResponseEntity<String> addEntryOfUser(@PathVariable String username, @RequestBody DemoEntity demoEntity){
         try {
-            entity.setCreatedDate(LocalDateTime.now());
-            demoEntryService.saveDemoEntry(entity);
+            demoService.saveDemoEntry(demoEntity, username);
             return ResponseEntity.ok().body("Entry created successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -56,119 +118,54 @@ public class DemoController {
     }
 
     /*
-     * Get all entries
-     * 
-     * @return List<DemoEntity>
-     * 
-     * GET /demo
-     * 
-     * Response: [
-     *      {
-     *          "id": "60f3b3b3b3b3b3b3b3b3b3b3",
-     *          "demoTitle": "John Doe",
-     *          "description": "This is a demo entry",
-     *          "createdDate": "2021-07-19T12:00:00"
-     *          "updatedDate": "2021-07-19T12:01:00"
-     *      }
-     * ]
-     */
-    @GetMapping
-    public ResponseEntity<?> getAllEntries() {
-        try {
-            List<DemoEntity> entries = demoEntryService.getAllDemoEntries();
-            if (entries.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-            return ResponseEntity.ok().body(entries);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /*
-     * Get an entry by id
+     * Delete a demo entry using username and id
      * 
      * @param id
-     * @return DemoEntity
-     * 
-     * GET /demo/60f3b3b3b3b3b3b3b3b3b3
-     * 
-     * Response: [
-     *      {
-     *          "id": "60f3b3b3b3b3b3b3b3b3b3b3",
-     *          "demoTitle": "John Doe",
-     *          "description": "This is a demo entry",
-     *          "createdDate": "2021-07-19T12:00:00"
-     *          "updatedDate": "2021-07-19T12:01:00"
-     *      }
-     * ]
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getEntry(@PathVariable ObjectId id) {
-        try {
-            Optional<DemoEntity> entity = demoEntryService.getDemoEntry(id);
-            return ResponseEntity.ok().body(entity.get());
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /*
-     * Delete an entry
-     * 
-     * @param id
+     * @param username
      * 
      * @return String
      * 
-     * POST /demo/delete/60f3b3b3b3b3b3b3b3b3b3
+     * DELETE /demo/{username}/{id}
      * 
-     * Response: Entry deleted successfully *
+     * Response: Entry deleted successfully
+     * 
      */
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteEntry(@PathVariable ObjectId id) {
-        try {
-            demoEntryService.deleteDemoEntry(id);
-            return ResponseEntity.ok().body("Entry deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    @DeleteMapping("/{username}/{id}")
+    public ResponseEntity<String> deleteEntity(@PathVariable String username, @PathVariable ObjectId id){
+        demoService.deleteDemoEntry(username, id);
+        return ResponseEntity.ok().body("Entry deleted successfully");
     }
 
     /*
-     * Update an entry
+     * Update a demo entry using username and id
      * 
-     * @param entity
+     * @param id
+     * @param username
+     * 
      * @return String
      * 
-     * @RequestBody DemoEntity entity
-     * 
-     * {
-     * "demoTitle": "John Doe",
-     * "description": "This is a demo entry"
-     * }
-     * 
-     * POST /demo/update/60f3b3b3b3b3b3b3b3b3b3
+     * PUT /demo/{username}/{id}
      * 
      * Response: Entry updated successfully
+     * 
+     * {
+     *    "demoTitle": "Demo Title",
+     *  "description": "Description for demo"
+     * }
      */
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateEntry(@RequestBody DemoEntity entity, @PathVariable ObjectId id) {
-        try {
-            DemoEntity oldEntity = demoEntryService.getDemoEntry(id).orElse(null);
-            if (oldEntity != null) {
-                oldEntity.setDemoTitle(
-                        entity.getDemoTitle() != null && !entity.getDemoTitle().equals("") ? entity.getDemoTitle()
-                                : oldEntity.getDemoTitle());
-                oldEntity.setDescription(
-                        entity.getDescription() != null && !entity.getDescription().equals("") ? entity.getDescription()
-                                : oldEntity.getDescription());
-                oldEntity.setUpdatedDate(LocalDateTime.now());
-                demoEntryService.saveDemoEntry(oldEntity);
-                return ResponseEntity.ok().body("Entry updated successfully");
-            }
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+    @PutMapping("/{username}/{id}")
+    public ResponseEntity<String> updateEntity(
+        @PathVariable String username, 
+        @PathVariable ObjectId id,
+        @RequestBody DemoEntity demoEntity){
+        DemoEntity oldDemoEntity = demoService.getDemoEntry(id).orElse(null);
+        if(oldDemoEntity == null){
+            return ResponseEntity.badRequest().body("Entry not found");
         }
+        oldDemoEntity.setDemoTitle(demoEntity.getDemoTitle() != null && !demoEntity.getDemoTitle().isEmpty() ? demoEntity.getDemoTitle() : oldDemoEntity.getDemoTitle());
+        oldDemoEntity.setDescription(demoEntity.getDescription() != null && !demoEntity.getDescription().isEmpty() ? demoEntity.getDescription() : oldDemoEntity.getDescription());        
+        oldDemoEntity.setUpdatedDate(LocalDateTime.now());
+        demoService.saveDemoEntry(oldDemoEntity);
+        return ResponseEntity.ok().body("Entry updated successfully");
     }
 }

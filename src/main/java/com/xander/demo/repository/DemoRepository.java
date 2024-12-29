@@ -5,6 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.xander.demo.entity.DemoEntity;
 
-public interface DemoEntryRepository extends MongoRepository<DemoEntity, ObjectId> {
+public interface DemoRepository extends MongoRepository<DemoEntity, ObjectId> {
     
 }

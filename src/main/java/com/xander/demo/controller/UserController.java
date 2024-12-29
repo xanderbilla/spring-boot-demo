@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -91,12 +92,12 @@ public class UserController {
     }
 
     /*
-     * Get a user by username
+     * Update a user by username
      * 
      * @param username
      * @return UserEntity
      * 
-     * GET /user/john.doe
+     * PUT /user/john.doe
      * 
      * Response: {
      *     "id": "5f7b3b7b7b3b7b3b7b3b7b3b",
@@ -120,6 +121,63 @@ public class UserController {
             } else {
                 return ResponseEntity.noContent().build();
             }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /*
+     * Get a user by username
+     * 
+     * @param username
+     * @return UserEntity
+     * 
+     * GET /user/john.doe
+     * 
+     * Response: {
+     *          "id": "5f7b3b7b7b3b7b3b7b3b7b3b
+     *    "username": "john.doe",
+     *    "password": "password",
+     * "demoEntries": [],
+     *  "createDate": "2020-10-05T12:00:00",
+     *  "updateDate": "2020-10-05T12:00:00"
+     * }
+     * 
+     */
+
+    @GetMapping("/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
+        try {
+            UserEntity user = userService.findByUsername(username);
+            if (user != null) {
+                return ResponseEntity.ok().body(user);
+            } else {
+                return ResponseEntity.noContent().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /*
+     * Delete a user by username
+     * 
+     * @param username
+     * 
+     * DELETE /user/john.doe
+     * 
+     * Response: User deleted successfully
+     * 
+     */
+    @DeleteMapping("/{username}")
+    public ResponseEntity<String> deleteUser(@PathVariable String username){
+        try {
+            UserEntity user = userService.findByUsername(username);
+        if(user != null){
+            userService.deleteUser(user.getId());
+            return ResponseEntity.ok().body("User deleted successfully");
+        }
+        return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

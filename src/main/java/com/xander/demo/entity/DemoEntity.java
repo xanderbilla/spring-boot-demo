@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.mongodb.lang.NonNull;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection = "demo")
 
@@ -18,6 +19,7 @@ import lombok.Data;
  */
 
 @Data
+@NoArgsConstructor
 public class DemoEntity {
 
     @Id
