@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.xander.demo.entity.DemoEntity;
 import com.xander.demo.entity.UserEntity;
@@ -27,12 +28,18 @@ public class DemoService {
      * 
      * @param demoEntity
      */
+    @Transactional
     public void saveDemoEntry(DemoEntity demoEntity, String username) {
-        UserEntity user = userService.findByUsername(username);
-        demoEntity.setCreatedDate(LocalDateTime.now());
-        DemoEntity saved = demoRepository.save(demoEntity);
-        user.getDemoEntries().add(saved);
-        userService.saveUser(user); // Save the user after modifying it
+        try {
+            UserEntity user = userService.findByUsername(username);
+            demoEntity.setCreatedDate(LocalDateTime.now());
+            DemoEntity saved = demoRepository.save(demoEntity);
+            // user.setUsername(null);
+            user.getDemoEntries().add(saved);
+        } catch (Exception e) {
+            // System.out.println(e);
+            throw new RuntimeException("An error occured while saving demo entry");
+        }
     }
 
     public void saveDemoEntry(DemoEntity demoEntity) {
