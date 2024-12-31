@@ -5,10 +5,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,73 +24,6 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
-
-    /*
-     * Add a new user
-     * 
-     * @param userEntity
-     * 
-     * @return String
-     * 
-     * @RequestBody UserEntity userEntity
-     * 
-     * {
-     *     "username": "john.doe",
-     *     "password": "password"
-     * }
-     * 
-     * POST /user
-     * 
-     * Response: User created successfully
-     * 
-     */
-    @PostMapping
-    public ResponseEntity<String> addUser(@RequestBody UserEntity userEntity) {
-        try {
-            userEntity.setCreateDate(LocalDateTime.now());
-            if (userService.findByUsername(userEntity.getUsername()) == null) {
-                userService.saveUser(userEntity);
-                return ResponseEntity.ok().body("User created successfully");
-            } else {
-                return ResponseEntity.badRequest().body("User already exists");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    /*
-     * Get all users
-     * 
-     * @return List<UserEntity>
-     * 
-     * GET /user
-     * 
-     * Response: [
-     *     {
-     *         "id": "5f7b3b7b7b3b7b3b7b3b7b3b",
-     *         "username": "john.doe",
-     *         "password": "password",
-     *         "createDate": "2020-10-05T12:00:00",
-     *         "updateDate": "2020-10-05T12:00:00"
-     *     }
-     * ]
-     * 
-     */
-    @GetMapping
-    public ResponseEntity<?> getUsers() {
-        try {
-            List<UserEntity> users = userService.getAllUsers();
-            if (users.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            } else {
-                return ResponseEntity.ok().body(users);
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 
     /*
      * Update a user by username
@@ -108,9 +42,16 @@ public class UserController {
      * }
      * 
      */
-    @PutMapping("/{username}")
-    public ResponseEntity<?> updateUser(@RequestBody UserEntity userEntity, @PathVariable String username) {
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestBody UserEntity userEntity) {
         try {
+
+            /*
+             * 
+             */
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = auth.getName();
+
             UserEntity user = userService.findByUsername(username);
             if (user != null) {
                 user.setUsername(userEntity.getUsername());
@@ -145,9 +86,11 @@ public class UserController {
      * 
      */
 
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
+    @GetMapping
+    public ResponseEntity<?> getUserByUsername() {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = auth.getName();
             UserEntity user = userService.findByUsername(username);
             if (user != null) {
                 return ResponseEntity.ok().body(user);
@@ -169,9 +112,11 @@ public class UserController {
      * Response: User deleted successfully
      * 
      */
-    @DeleteMapping("/{username}")
-    public ResponseEntity<String> deleteUser(@PathVariable String username){
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser(){
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = auth.getName();
             UserEntity user = userService.findByUsername(username);
         if(user != null){
             userService.deleteUser(user.getId());

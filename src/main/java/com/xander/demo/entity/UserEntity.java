@@ -64,4 +64,8 @@ public class UserEntity {
      */
     private List<DemoEntity> demoEntries = new ArrayList<>();
     
+    /*
+     * Declaring Roles
+     */
+    private List<String> roles;
 }

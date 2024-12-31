@@ -1,10 +1,13 @@
 package com.xander.demo.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.xander.demo.entity.UserEntity;
@@ -16,13 +19,18 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     /*
      * Save/Create a new user
      * 
      * @param userEntity
      * 
      */
-    public void saveUser(UserEntity userEntity) {        
+    public void saveUser(UserEntity userEntity) {
+        userEntity.setPassword(passwordEncoder
+                .encode(userEntity.getPassword()));
+        userEntity.setRoles(Arrays.asList("USER"));
         userRepository.save(userEntity);
     }
 
@@ -38,6 +46,7 @@ public class UserService {
      * Get a user by id
      * 
      * @param id
+     * 
      * @return Optional<UserEntity>
      */
     public Optional<UserEntity> getUserById(ObjectId id) {
@@ -57,6 +66,7 @@ public class UserService {
      * Find a user by username
      * 
      * @param username
+     * 
      * @return UserEntity
      */
     public UserEntity findByUsername(String username) {
