@@ -25,7 +25,7 @@ public class PublicController {
     /*
      * Health Check
      */
-    @GetMapping("/health")
+    @GetMapping("/health-check")
     public String Health() {
         return "Health Check Passed! ✅";
     }

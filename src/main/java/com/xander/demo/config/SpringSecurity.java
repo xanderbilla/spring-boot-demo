@@ -32,8 +32,8 @@ public class SpringSecurity {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         return http.authorizeHttpRequests(request -> request
-                .requestMatchers("/demo/**", "/user/**").authenticated()
-                .anyRequest().permitAll())
+                .requestMatchers("/public/**").permitAll()
+                .requestMatchers("/demo/**", "/user/**").authenticated())
                 .formLogin(Customizer.withDefaults())
                 /*
                  * .formLogin(form -> form

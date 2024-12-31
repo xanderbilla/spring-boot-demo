@@ -27,9 +27,9 @@ public class UserEntity {
      *     "password": "password",
      *   "createDate": "2020-10-20T12:00:00",
      *  "demoEntries": [
-            DBRef("demoEntries", "5f8f4b3b7f3b9b0b3c7b3b9b"),
-            DBRef("demoEntries", "5f8f4b3b7f3b9b0b3c7b3b9b")
-    *       ]
+     *     DBRef("demoEntries", "5f8f4b3b7f3b9b0b3c7b3b9b"),
+     *     DBRef("demoEntries", "5f8f4b3b7f3b9b0b3c7b3b9b")
+     *       ]
      * }
      * 
      */

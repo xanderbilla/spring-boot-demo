@@ -6,6 +6,8 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,40 +33,13 @@ public class DemoController {
     private UserService userService;
 
     /*
-     * Get all demo entries
-     * 
-     * @return List<DemoEntity>
-     * 
-     * GET /demo
-     * 
-     * Response: [
-     *   {
-     *            "id": "5f7b3b7b7b3b7b3b7b3b7b3b",
-     *     "demoTitle": "Demo Title",
-     *   "description": "Description for demo",
-     *   "createdDate": "2020-10-05T12:00:00"
-     *      }
-     * ]
-     */
-
-    @GetMapping
-    public ResponseEntity<List<DemoEntity>> getAllDemoEntries(){
-        try {
-            List<DemoEntity> all = demoService.getAllDemoEntries();
-            return ResponseEntity.ok().body(all);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    /*
      * Get all demo entries for a user
      * 
      * @param username
      * 
      * @return List<DemoEntity>
      * 
-     * GET /demo/{username}
+     * GET /demo
      * 
      * Response: [
      *    {
@@ -75,18 +50,59 @@ public class DemoController {
      *   }
      * ]
      */
-    @GetMapping("/{username}")
-    public ResponseEntity<?> getAllUserDemo(@PathVariable String username) {
-        try {
+    @GetMapping
+    public ResponseEntity<?> getAllUserDemo() {
+        try {            
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated()) {
+                return ResponseEntity.status(401).body("Unauthorized");
+            }
+            String username = auth.getName();
             UserEntity user = userService.findByUsername(username);
             // get all demo entries for the user have key "demoEntries"
             List<DemoEntity> all = user.getDemoEntries(); 
+            if(all == null || all.isEmpty()){
+                return ResponseEntity.noContent().build();
+            }
             return ResponseEntity.ok().body(all);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
+    /*
+     * Get demo entry by id for a user
+     * 
+     * @return List<DemoEntity>
+     * 
+     * GET /demo/{username}/{id}
+     * 
+     * Response: [
+     *   {
+     *            "id": "5f7b3b7b7b3b7b3b7b3b7b3b",
+     *     "demoTitle": "Demo Title",
+     *   "description": "Description for demo",
+     *   "createdDate": "2020-10-05T12:00:00"
+     *      }
+     * ]
+     */
+    @GetMapping("/{username}/{id}")
+    public ResponseEntity<List<DemoEntity>> getAllDemoEntries(@PathVariable String username, @PathVariable ObjectId id) {
+        try {
+            UserEntity user = userService.findByUsername(username);
+            List<DemoEntity> entries = user.getDemoEntries();
+            if(entries == null || entries.isEmpty()){
+                return ResponseEntity.noContent().build();
+            }
+            if(id != null){
+                entries = entries.stream().filter(entry -> entry.getId().equals(id)).toList();
+            }
+            return ResponseEntity.ok().body(entries);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
     /*
      * Add a new demo entry for a user
      * 
@@ -107,9 +123,11 @@ public class DemoController {
      * Response: Entry created successfully
      * 
      */
-    @PostMapping("/{username}")
-    public ResponseEntity<String> addEntryOfUser(@PathVariable String username, @RequestBody DemoEntity demoEntity){
-        try {
+    @PostMapping
+    public ResponseEntity<String> addEntryOfUser(@RequestBody DemoEntity demoEntity){
+        try {        
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String username = auth.getName();            
             demoService.saveDemoEntry(demoEntity, username);
             return ResponseEntity.ok().body("Entry created successfully");
         } catch (Exception e) {
