@@ -12,10 +12,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.mongodb.lang.NonNull;
 
+// import lombok.Builder;
 import lombok.Data;
 
 @Document(collection = "users")
 @Data
+// @Builder //Uncomment this line at the time of testing
 public class UserEntity {
 
     /*
