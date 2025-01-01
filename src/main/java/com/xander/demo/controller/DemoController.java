@@ -126,12 +126,12 @@ public class DemoController {
      * 
      */
     @PostMapping
-    public ResponseEntity<DemoEntity> addEntryOfUser(@RequestBody DemoEntity demoEntity) {
+    public ResponseEntity<String> addEntryOfUser(@RequestBody DemoEntity demoEntity) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
             demoService.saveDemoEntry(demoEntity, username);
-            return ResponseEntity.ok().body(demoEntity);
+            return ResponseEntity.ok().body("Entry created successfully! ✅");
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

@@ -34,6 +34,19 @@ public class SpringSecurity {
         return http.authorizeHttpRequests(request -> request
                 .requestMatchers("/public/**").permitAll()
                 .requestMatchers("/demo/**", "/user/**").authenticated()
+
+                /*
+                 * .hasRole("ADMIN") is used to check if the user has the role ADMIN.
+                 * 
+                 * It is checking our user role in the database. which is passed by 
+                 * UserDetailsServiceImpl class where we are fetching the user
+                 * and from the user we are fetching the role -
+                 * 
+                 * .roles(user.getRoles().toArray(new String[0]))
+                 * 
+                 * This is managed by AuthenticationManagerBuilder class.
+                 */
+
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
