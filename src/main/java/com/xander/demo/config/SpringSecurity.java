@@ -33,7 +33,9 @@ public class SpringSecurity {
 
         return http.authorizeHttpRequests(request -> request
                 .requestMatchers("/public/**").permitAll()
-                .requestMatchers("/demo/**", "/user/**").authenticated())
+                .requestMatchers("/demo/**", "/user/**").authenticated()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 /*
                  * .formLogin(form -> form
@@ -50,7 +52,7 @@ public class SpringSecurity {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder());
+                .passwordEncoder(passwordEncoder());
     }
 
     /*
@@ -58,11 +60,14 @@ public class SpringSecurity {
      * hashing function.
      * 
      * Use to encode the password before storing it in the database and
-     * at when a user tries to log in, the system should check the provided credentials
-     * against what is stored in the database. 
+     * at when a user tries to log in, the system should check the provided
+     * credentials
+     * against what is stored in the database.
      * 
-     * At the time of login the password will be encoded and compared with the encoded 
-     * password stored in the database. If match found then user will be allowed to login.
+     * At the time of login the password will be encoded and compared with the
+     * encoded
+     * password stored in the database. If match found then user will be allowed to
+     * login.
      * 
      */
     @Bean

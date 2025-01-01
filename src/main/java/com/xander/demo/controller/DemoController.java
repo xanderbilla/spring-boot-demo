@@ -52,16 +52,13 @@ public class DemoController {
      */
     @GetMapping
     public ResponseEntity<?> getAllUserDemo() {
-        try {            
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth == null || !auth.isAuthenticated()) {
-                return ResponseEntity.status(401).body("Unauthorized");
-            }
-            String username = auth.getName();
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
             UserEntity user = userService.findByUsername(username);
             // get all demo entries for the user have key "demoEntries"
-            List<DemoEntity> all = user.getDemoEntries(); 
-            if(all == null || all.isEmpty()){
+            List<DemoEntity> all = user.getDemoEntries();
+            if (all == null || all.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
             return ResponseEntity.ok().body(all);
@@ -86,18 +83,23 @@ public class DemoController {
      *      }
      * ]
      */
-    @GetMapping("/{username}/{id}")
-    public ResponseEntity<List<DemoEntity>> getAllDemoEntries(@PathVariable String username, @PathVariable ObjectId id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<List<DemoEntity>> getAllDemoEntries(@PathVariable ObjectId id) {
         try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
             UserEntity user = userService.findByUsername(username);
             List<DemoEntity> entries = user.getDemoEntries();
-            if(entries == null || entries.isEmpty()){
+            if (entries == null || entries.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
-            if(id != null){
-                entries = entries.stream().filter(entry -> entry.getId().equals(id)).toList();
+            List<DemoEntity> filteredEntries = entries.stream()
+                    .filter(entry -> entry.getId().equals(id))
+                    .toList();
+            if (filteredEntries.isEmpty()) {
+                return ResponseEntity.notFound().build();
             }
-            return ResponseEntity.ok().body(entries);
+            return ResponseEntity.ok().body(filteredEntries);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -124,12 +126,12 @@ public class DemoController {
      * 
      */
     @PostMapping
-    public ResponseEntity<String> addEntryOfUser(@RequestBody DemoEntity demoEntity){
-        try {        
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = auth.getName();            
+    public ResponseEntity<DemoEntity> addEntryOfUser(@RequestBody DemoEntity demoEntity) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
             demoService.saveDemoEntry(demoEntity, username);
-            return ResponseEntity.ok().body("Entry created successfully");
+            return ResponseEntity.ok().body(demoEntity);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -148,10 +150,25 @@ public class DemoController {
      * Response: Entry deleted successfully
      * 
      */
-    @DeleteMapping("/{username}/{id}")
-    public ResponseEntity<String> deleteEntity(@PathVariable String username, @PathVariable ObjectId id){
-        demoService.deleteDemoEntry(username, id);
-        return ResponseEntity.ok().body("Entry deleted successfully");
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteEntryOfUser(@PathVariable ObjectId id) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            UserEntity user = userService.findByUsername(username);
+            List<DemoEntity> entries = user.getDemoEntries();
+            if (entries == null || entries.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            boolean res = demoService.deleteDemoEntry(username, id);
+            if (res) {
+                return ResponseEntity.ok().body("Entry deleted successfully");
+            }
+            return ResponseEntity.badRequest().body("An error occurred while deleting entry");
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /*
@@ -171,19 +188,35 @@ public class DemoController {
      *  "description": "Description for demo"
      * }
      */
-    @PutMapping("/{username}/{id}")
-    public ResponseEntity<String> updateEntity(
-        @PathVariable String username, 
-        @PathVariable ObjectId id,
-        @RequestBody DemoEntity demoEntity){
-        DemoEntity oldDemoEntity = demoService.getDemoEntry(id).orElse(null);
-        if(oldDemoEntity == null){
-            return ResponseEntity.badRequest().body("Entry not found");
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateEntryOfUser(@PathVariable ObjectId id, @RequestBody DemoEntity demoEntity) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            UserEntity user = userService.findByUsername(username);
+            List<DemoEntity> entries = user.getDemoEntries();
+            if (entries == null || entries.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            DemoEntity existingEntry = entries.stream()
+                    .filter(entry -> entry.getId().equals(id))
+                    .findFirst()
+                    .orElse(null);
+
+            if (existingEntry == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            existingEntry.setDemoTitle(
+                    demoEntity.getDemoTitle() != null ? demoEntity.getDemoTitle() : existingEntry.getDemoTitle());
+            existingEntry.setDescription(
+                    demoEntity.getDescription() != null ? demoEntity.getDescription() : existingEntry.getDescription());
+
+            existingEntry.setUpdatedDate(LocalDateTime.now());
+            demoService.saveDemoEntry(existingEntry);
+            return ResponseEntity.ok().body(existingEntry);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
-        oldDemoEntity.setDemoTitle(demoEntity.getDemoTitle() != null && !demoEntity.getDemoTitle().isEmpty() ? demoEntity.getDemoTitle() : oldDemoEntity.getDemoTitle());
-        oldDemoEntity.setDescription(demoEntity.getDescription() != null && !demoEntity.getDescription().isEmpty() ? demoEntity.getDescription() : oldDemoEntity.getDescription());        
-        oldDemoEntity.setUpdatedDate(LocalDateTime.now());
-        demoService.saveDemoEntry(oldDemoEntity);
-        return ResponseEntity.ok().body("Entry updated successfully");
     }
 }

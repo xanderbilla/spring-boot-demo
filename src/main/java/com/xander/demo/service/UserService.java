@@ -27,10 +27,15 @@ public class UserService {
      * @param userEntity
      * 
      */
-    public void saveUser(UserEntity userEntity) {
-        userEntity.setPassword(passwordEncoder
-                .encode(userEntity.getPassword()));
+    // For new users so that we can encode the password
+    public void saveNewUser(UserEntity userEntity) {
+        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         userEntity.setRoles(Arrays.asList("USER"));
+        userRepository.save(userEntity);
+    }
+
+    // For existing users 
+    public void saveUser(UserEntity userEntity) {
         userRepository.save(userEntity);
     }
 

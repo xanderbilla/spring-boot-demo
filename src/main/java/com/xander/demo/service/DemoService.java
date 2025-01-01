@@ -56,19 +56,25 @@ public class DemoService {
         return demoRepository.findAll();
     }
 
+    @Transactional
     /*
      * Delete a demo entry
      * 
      * @param id
      */
-    public void deleteDemoEntry(String username, ObjectId id) {
-        UserEntity user = userService.findByUsername(username);
+    public boolean deleteDemoEntry(String username, ObjectId id) {
+        try {
+            UserEntity user = userService.findByUsername(username);
 
-        // Remove the demo entry from the user's list of demo entries
-        user.getDemoEntries().removeIf(demo -> demo.getId().equals(id));
+            // Remove the demo entry from the user's list of demo entries
+            user.getDemoEntries().removeIf(demo -> demo.getId().equals(id));
 
-        userService.saveUser(user);
-        demoRepository.deleteById(id);
+            userService.saveUser(user);
+            demoRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("An error occured while deleting demo entry");
+        }
     }
 
     /*

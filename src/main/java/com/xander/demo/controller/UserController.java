@@ -55,7 +55,7 @@ public class UserController {
                 user.setUsername(userEntity.getUsername());
                 user.setPassword(userEntity.getPassword());
                 user.setUpdateDate(LocalDateTime.now());
-                userService.saveUser(user);
+                userService.saveNewUser(user);
                 return ResponseEntity.ok().body("User updated successfully");
             } else {
                 return ResponseEntity.noContent().build();
@@ -84,21 +84,21 @@ public class UserController {
      * 
      */
 
-    @GetMapping
-    public ResponseEntity<?> getUserByUsername() {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = auth.getName();
-            UserEntity user = userService.findByUsername(username);
-            if (user != null) {
-                return ResponseEntity.ok().body(user);
-            } else {
-                return ResponseEntity.noContent().build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+     @GetMapping
+     public ResponseEntity<?> getUserByUsername() {
+         try {
+             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+             String username = authentication.getName();
+             UserEntity user = userService.findByUsername(username);
+             if (user != null) {
+                 return ResponseEntity.ok().body(user);
+             } else {
+                 return ResponseEntity.noContent().build();
+             }
+         } catch (Exception e) {
+             return ResponseEntity.badRequest().build();
+         }
+     }
 
     /*
      * Delete a user by username
@@ -111,16 +111,16 @@ public class UserController {
      * 
      */
     @DeleteMapping
-    public ResponseEntity<String> deleteUser(){
+    public ResponseEntity<String> deleteUser() {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = auth.getName();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
             UserEntity user = userService.findByUsername(username);
-        if(user != null){
-            userService.deleteUser(user.getId());
-            return ResponseEntity.ok().body("User deleted successfully");
-        }
-        return ResponseEntity.noContent().build();
+            if (user != null) {
+                userService.deleteUser(user.getId());
+                return ResponseEntity.ok().body("User deleted successfully");
+            }
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

@@ -50,12 +50,12 @@ public class PublicController {
      * 
      */
     @PostMapping("/create-user")
-    public ResponseEntity<String> addUser(@RequestBody UserEntity userEntity) {
+    public ResponseEntity<?> addUser(@RequestBody UserEntity userEntity) {
         try {
             userEntity.setCreateDate(LocalDateTime.now());
             if (userService.findByUsername(userEntity.getUsername()) == null) {
-                userService.saveUser(userEntity);
-                return ResponseEntity.ok().body("User created successfully");
+                userService.saveNewUser(userEntity);
+                return ResponseEntity.ok().body(userEntity);
             } else {
                 return ResponseEntity.badRequest().body("User already exists");
             }
