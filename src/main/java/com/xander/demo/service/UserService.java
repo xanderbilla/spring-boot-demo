@@ -28,13 +28,18 @@ public class UserService {
      * 
      */
     // For new users so that we can encode the password
-    public void saveNewUser(UserEntity userEntity) {
-        userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
-        userEntity.setRoles(Arrays.asList("USER"));
-        userRepository.save(userEntity);
+    public boolean saveNewUser(UserEntity userEntity) {
+        try {
+            userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
+            userEntity.setRoles(Arrays.asList("USER"));
+            userRepository.save(userEntity);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    // For existing users 
+    // For existing users
     public void saveUser(UserEntity userEntity) {
         userRepository.save(userEntity);
     }

@@ -12,12 +12,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.mongodb.lang.NonNull;
 
-// import lombok.Builder;
+import lombok.Builder;
 import lombok.Data;
 
 @Document(collection = "users")
 @Data
-// @Builder //Uncomment this line at the time of testing
+@Builder //Uncomment this line at the time of testing
 public class UserEntity {
 
     /*
@@ -64,6 +64,7 @@ public class UserEntity {
     /*
      * When a user is created, it will have an empty list of demo entries
      */
+    @Builder.Default
     private List<DemoEntity> demoEntries = new ArrayList<>();
     
     /*
