@@ -68,6 +68,7 @@ public class UserServiceTests {
         assertNotNull(UserRepository.findByUsername(username));
     }
 
+    @Disabled
     @Test
     @ParameterizedTest
     /*

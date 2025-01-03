@@ -17,7 +17,7 @@ import lombok.Data;
 
 @Document(collection = "users")
 @Data
-@Builder //Uncomment this line at the time of testing
+@Builder
 public class UserEntity {
 
     /*

@@ -1,35 +1,42 @@
 package com.xander.demo.service;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.xander.demo.entity.UserEntity;
 import com.xander.demo.repository.UserRepository;
 
-@SpringBootTest
 public class UserDetailsServiceImplTest{
 
-    @Autowired
+    @InjectMocks
     private UserDetailsServiceImpl userDetailsService;
 
-    @MockitoBean
+    @Mock
     private UserRepository userRepository;
+
+    @BeforeEach
+    void setUp(){
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void loadUserByUsernameTest(){
         when(userRepository.findByUsername("taklu"))
             .thenReturn(UserEntity.builder()
                 .username("taklu")
+                .password("taklumc")
+                .roles(new ArrayList<>())
                 .build());
-                UserDetails userDetails = userDetailsService.loadUserByUsername("taklu");
-                assertTrue(null);
+                UserDetails user = userDetailsService.loadUserByUsername("taklu");
+                assertNotNull(user);
             }
-
 }
