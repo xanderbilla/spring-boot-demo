@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
 @RequestMapping("/public")
+// @Profile("dev")
 public class PublicController {
 
     @Autowired
@@ -59,6 +60,20 @@ public class PublicController {
             } else {
                 return ResponseEntity.badRequest().body("User already exists");
             }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /*
+     * To generate an error and print log in the console use the following endpoint
+     */
+    @PostMapping("/generate-error")
+    public ResponseEntity<String> generateError(@RequestBody UserEntity userEntity) {
+        try {
+            userEntity.setCreateDate(LocalDateTime.now());
+                userService.saveNewUser(userEntity);
+                return new ResponseEntity<>("User created successfully! ✅", HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

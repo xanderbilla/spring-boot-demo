@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,11 +15,30 @@ import org.springframework.stereotype.Component;
 import com.xander.demo.entity.UserEntity;
 import com.xander.demo.repository.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+/*
+ * @Slf4j is a Lombok annotation to auto-generate an SLF4J logger in the class.
+ * 
+ * It is equivalent to the following:
+ * 
+ * private static final Logger logger = LoggerFactory.getLogger(UserService.class.getName());
+ * 
+ * If we are using @Slf4j, we don't need to declare the `logger` variable instead 
+ * we can use `log` directly.
+ * 
+ * e.g. logger.error("An error occured while saving demo entry", e); ❎
+ * e.g. log.info("An error occured while saving demo entry", e); ✅
+ */
+@Slf4j
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    // Following is replaced by @Slf4j annotation
+    // private static final Logger logger = LoggerFactory.getLogger(UserService.class.getName());
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -35,6 +56,14 @@ public class UserService {
             userRepository.save(userEntity);
             return true;
         } catch (Exception e) {
+            // System.out.println(e);
+            /*
+             *  Log the error
+             * 
+             * e.g. logger.error("An error occured while saving demo entry", e);
+             * e.g. logger.error("An error occured for user {} while saving demo entry", userEntity.getUsername(), e);
+             */
+            log.info("This is a custom message for the error");
             return false;
         }
     }

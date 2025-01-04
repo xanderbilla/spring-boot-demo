@@ -22,6 +22,7 @@ public class DemoService {
     @Autowired
     private UserService userService;
 
+
     // CRUD operations
     /*
      * Save/Create a new demo entry
@@ -34,11 +35,9 @@ public class DemoService {
             UserEntity user = userService.findByUsername(username);
             demoEntity.setCreatedDate(LocalDateTime.now());
             DemoEntity saved = demoRepository.save(demoEntity);
-            // user.setUsername(null);
             user.getDemoEntries().add(saved);
             userService.saveUser(user);
         } catch (Exception e) {
-            // System.out.println(e);
             throw new RuntimeException("An error occured while saving demo entry");
         }
     }

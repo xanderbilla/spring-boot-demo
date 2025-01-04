@@ -1,0 +1,41 @@
+<configuration>
+    <!-- Appender is used to write logs to a file/ console/ database/ remote server etc. -->
+    <!-- 
+    Here:
+        STDOUT is used to write logs to console
+        FILE is used to write logs to a file
+     -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 
+        Pattern is used to format the log message. Here:
+            %d{yyyy-MM-dd HH:mm:ss} - Date and time
+            [%thread] - Thread name
+            %-5level - Log level
+            %logger{36} - Logger name
+            %msg - Log message
+            %n - New line
+         -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!-- <appender name="FILE" class="ch.qos.logback.core.FileAppender"> -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/demoProject.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
+
+
+
+
