@@ -41,7 +41,7 @@ public class AdminController {
      *           "username": "john.doe",
      *           "password": "password",
      *           "createDate": "2021-08-01T12:00:00"
-     *           "role": "ADMIN"
+     *           "role": ["ADMIN"]
      *      }
      * ]
      */

@@ -25,8 +25,12 @@ import com.xander.demo.service.UserDetailsServiceImpl;
 @EnableWebSecurity
 public class SpringSecurity {
 
-    @Autowired
     private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    public SpringSecurity(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
