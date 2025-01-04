@@ -21,8 +21,12 @@ import com.xander.demo.service.UserService;
 @RequestMapping("/admin")
 public class AdminController {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public AdminController(UserService userService) {
+        this.userService = userService;
+    }
 
     /*
      * Get all users
@@ -32,17 +36,17 @@ public class AdminController {
      * GET /admin/all-users
      * 
      * Response: [
-     * {
-     * "id": 1,
-     * "username": "john.doe",
-     * "password": "password",
-     * "createDate": "2021-08-01T12:00:00"
-     * "role": "ADMIN"
-     * }
+     *      {
+     *           "id": 1,
+     *           "username": "john.doe",
+     *           "password": "password",
+     *           "createDate": "2021-08-01T12:00:00"
+     *           "role": "ADMIN"
+     *      }
      * ]
      */
     @GetMapping("/all-users")
-    public ResponseEntity<?> fetchAllUsers() {
+    public ResponseEntity<List<UserEntity>> fetchAllUsers() {
         List<UserEntity> users = userService.getAllUsers();
         if (users != null && !users.isEmpty()) {
             return new ResponseEntity<>(users, HttpStatus.OK);
@@ -61,8 +65,8 @@ public class AdminController {
      * @RequestBody UserEntity userEntity
      * 
      * {
-     * "username": "john.doe",
-     * "password": "password"
+     *      "username": "john.doe",
+     *      "password": "password"
      * }
      */
     @PostMapping("/add-admin-user")

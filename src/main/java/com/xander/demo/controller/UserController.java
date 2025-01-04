@@ -20,8 +20,12 @@ import com.xander.demo.service.UserService;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
     private UserService userService;
+    
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     /*
      * Update a user by username
@@ -41,7 +45,7 @@ public class UserController {
      * 
      */
     @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody UserEntity userEntity) {
+    public ResponseEntity<String> updateUser(@RequestBody UserEntity userEntity) {
         try {
 
             /*
@@ -85,7 +89,7 @@ public class UserController {
      */
 
      @GetMapping
-     public ResponseEntity<?> getUserByUsername() {
+     public ResponseEntity<UserEntity> getUserByUsername() {
          try {
              Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
              String username = authentication.getName();

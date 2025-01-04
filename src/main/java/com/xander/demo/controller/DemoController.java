@@ -6,6 +6,7 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,11 +27,14 @@ import com.xander.demo.service.UserService;
 @RequestMapping("/demo")
 public class DemoController {
 
-    @Autowired
-    private DemoService demoService;
+    private final DemoService demoService;
+    private final UserService userService;
 
     @Autowired
-    private UserService userService;
+    public DemoController(DemoService demoService, UserService userService) {
+        this.demoService = demoService;
+        this.userService = userService;
+    }
 
     /*
      * Get all demo entries for a user
@@ -51,7 +55,7 @@ public class DemoController {
      * ]
      */
     @GetMapping
-    public ResponseEntity<?> getAllUserDemo() {
+    public ResponseEntity<List<DemoEntity>> getAllUserDemo() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();
@@ -164,7 +168,7 @@ public class DemoController {
             if (res) {
                 return ResponseEntity.ok().body("Entry deleted successfully");
             }
-            return ResponseEntity.badRequest().body("An error occurred while deleting entry");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting entry");
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -189,7 +193,7 @@ public class DemoController {
      * }
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEntryOfUser(@PathVariable ObjectId id, @RequestBody DemoEntity demoEntity) {
+    public ResponseEntity<DemoEntity> updateEntryOfUser(@PathVariable ObjectId id, @RequestBody DemoEntity demoEntity) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String username = authentication.getName();

@@ -20,14 +20,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // @Profile("dev")
 public class PublicController {
 
-    @Autowired
     private UserService userService;
+
+    @Autowired
+    public PublicController(UserService userService) {
+        this.userService = userService;
+    }
+
 
     /*
      * Health Check
      */
     @GetMapping("/health-check")
-    public String Health() {
+    public String health() {
         return "Health Check Passed! ✅";
     }
 
@@ -41,8 +46,8 @@ public class PublicController {
      * @RequestBody UserEntity userEntity
      * 
      * {
-     * "username": "john.doe",
-     * "password": "password"
+     *      "username": "john.doe",
+     *      "password": "password"
      * }
      * 
      * POST /user

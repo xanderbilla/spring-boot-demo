@@ -63,7 +63,7 @@ public class UserService {
              * e.g. logger.error("An error occured while saving demo entry", e);
              * e.g. logger.error("An error occured for user {} while saving demo entry", userEntity.getUsername(), e);
              */
-            log.info("This is a custom message for the error");
+            log.error("An error occured while saving demo entry", e);
             return false;
         }
     }
