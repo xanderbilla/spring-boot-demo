@@ -2,7 +2,6 @@ package com.xander.demo.controller;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,9 +19,8 @@ import com.xander.demo.service.UserService;
 @RequestMapping("/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
     
-    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
