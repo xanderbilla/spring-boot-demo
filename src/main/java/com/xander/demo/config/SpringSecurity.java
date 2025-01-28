@@ -25,9 +25,8 @@ import com.xander.demo.service.UserDetailsServiceImpl;
 @EnableWebSecurity
 public class SpringSecurity {
 
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
     public SpringSecurity(UserDetailsServiceImpl userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
