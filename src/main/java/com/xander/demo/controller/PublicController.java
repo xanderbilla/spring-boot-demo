@@ -3,11 +3,12 @@ package com.xander.demo.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.xander.demo.entity.UserEntity;
+import com.xander.demo.entity.VideoEntity;
+import com.xander.demo.service.TMDBService;
 import com.xander.demo.service.UserService;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 // @Profile("dev")
 public class PublicController {
 
-    private UserService userService;
+    private final UserService userService;
+    private final TMDBService tmdbService;
 
-    @Autowired
-    public PublicController(UserService userService) {
+    public PublicController(UserService userService, TMDBService tmdbService) {
         this.userService = userService;
+        this.tmdbService = tmdbService;
     }
 
 
@@ -77,10 +79,24 @@ public class PublicController {
     public ResponseEntity<String> generateError(@RequestBody UserEntity userEntity) {
         try {
             userEntity.setCreateDate(LocalDateTime.now());
-                userService.saveNewUser(userEntity);
-                return new ResponseEntity<>("User created successfully! ✅", HttpStatus.CREATED);
+            userService.saveNewUser(userEntity);
+            return new ResponseEntity<>("User created successfully! ✅", HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/tv-show")
+    public ResponseEntity<VideoEntity> getTVShow() {
+        try {
+            VideoEntity videoEntity = tmdbService.getTVTitle(46260);
+            if (videoEntity != null) {
+                return new ResponseEntity<>(videoEntity, HttpStatus.OK);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
