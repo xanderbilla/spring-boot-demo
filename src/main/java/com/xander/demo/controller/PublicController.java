@@ -2,6 +2,7 @@ package com.xander.demo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.xander.demo.config.AppCache;
 import com.xander.demo.entity.UserEntity;
 import com.xander.demo.entity.VideoEntity;
 import com.xander.demo.service.TMDBService;
@@ -23,12 +24,13 @@ public class PublicController {
 
     private final UserService userService;
     private final TMDBService tmdbService;
+    private final AppCache appCache;
 
-    public PublicController(UserService userService, TMDBService tmdbService) {
+    public PublicController(UserService userService, TMDBService tmdbService, AppCache appCache) {
+        this.appCache = appCache;
         this.userService = userService;
         this.tmdbService = tmdbService;
     }
-
 
     /*
      * Health Check
@@ -48,8 +50,8 @@ public class PublicController {
      * @RequestBody UserEntity userEntity
      * 
      * {
-     *      "username": "john.doe",
-     *      "password": "password"
+     * "username": "john.doe",
+     * "password": "password"
      * }
      * 
      * POST /user
@@ -98,6 +100,20 @@ public class PublicController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /*
+     * Clear cache
+     * 
+     * @return String
+     * 
+     * GET /admin/clear-cache
+     */
+
+    @GetMapping("/clear-cache")
+    public ResponseEntity<String> clearCache() {
+        appCache.init();
+        return ResponseEntity.ok().body("Cache cleared");
     }
 
 }
