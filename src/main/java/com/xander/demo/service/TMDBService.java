@@ -1,6 +1,7 @@
 package com.xander.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,8 @@ import com.xander.demo.entity.VideoEntity;
 @Service
 public class TMDBService {
 
-    public static final String API = "09389ac5239422a440a1fcb9738328fd";
+    @Value("${app.tmdb.api.key}")
+    public String API;
     public static final String BASE_URL = "https://api.themoviedb.org/3/tv/MOVIE_ID?api_key=API_KEY";
 
     @Autowired
