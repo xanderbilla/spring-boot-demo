@@ -6,14 +6,14 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.xander.demo.entity.DemoEntity;
 import com.xander.demo.entity.UserEntity;
 import com.xander.demo.repository.DemoRepository;
 
-@Component
+@Service
 public class DemoService {
 
     @Autowired

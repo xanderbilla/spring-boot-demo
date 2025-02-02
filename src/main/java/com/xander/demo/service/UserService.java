@@ -10,14 +10,14 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.xander.demo.entity.UserEntity;
 import com.xander.demo.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Component
+@Service
 /*
  * @Slf4j is a Lombok annotation to auto-generate an SLF4J logger in the class.
  * 

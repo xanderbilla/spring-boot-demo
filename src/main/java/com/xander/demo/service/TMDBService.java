@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.xander.demo.entity.VideoEntity;
 
-@Component
+@Service
 public class TMDBService {
 
     public static final String API = "09389ac5239422a440a1fcb9738328fd";
