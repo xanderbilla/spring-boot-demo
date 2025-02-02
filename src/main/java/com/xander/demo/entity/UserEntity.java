@@ -12,12 +12,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.mongodb.lang.NonNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection = "users")
 @Data
 @Builder
+/*
+ * Should be used at the time of testing.
+ */
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
 
     /*
@@ -50,6 +57,8 @@ public class UserEntity {
     private String username;
     @NonNull
     private String password;
+    private String email;
+    private boolean sentimentalAnalysis; //Mood of the user based on the entries in the past week
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
     
